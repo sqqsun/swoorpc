@@ -1,0 +1,29 @@
+{
+    "name": "sunqiang/swoorpc",
+    "description": "swoole rpc",
+    "authors": [
+        {
+            "name": "sunqiang",
+            "email": "sqqsun@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Swoorpc\\" : "src/Swoorpc/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Swoorpc\\ServiceProvider"
+            ],
+            "aliases": {
+                "SwoorpcRouter": "Swoorpc\\Facades\\Router"
+            }
+
+        }
+    }
+}
