@@ -29,15 +29,22 @@ class TcpClient
         $this->_sock_type = $sock_type;
         $this->_host = $host;
         $this->_port = $port;
-        $this->_client = new swoole_client($this->_sock_type);
-        $this->_connect($this->_host, $this->_port);
+        $this->_connect();
     }
 
-    public function _send($mothed, $params)
+    public function _send($mothed, $params, $recount = 5)
     {
         $input = new RpcInput($mothed, $params);
         $inputStr = Swoorpc::swoorpc_serialize($input);
+
         $this->_client->send($inputStr);
+        $result = $this->_client->recv();
+        if (!$result && $recount > 0) {
+            sleep(1);
+            $this->_connect();
+            return $this->_send($mothed, $params, $recount - 1);
+        }
+
         $result = $this->_client->recv();
         $rpcOutput = Swoorpc::swoorpc_unserialize($result);
         if ($rpcOutput->getCode() != 0) {
@@ -46,16 +53,15 @@ class TcpClient
         return $rpcOutput->getMessage();
     }
 
-    public function __destruct()
-    {
-        $this->_client->close();
-    }
 
-    private function _connect($host, $port)
+
+    private function _connect()
     {
-        if (!$this->_client->connect($host, $port, -1)) {
-            throw new RpcException("连接失败:{$host}:{$port}");
-        }
+
+        unset($this->_client);
+        $this->_client = new swoole_client($this->_sock_type);
+        $isconnection = $this->_client->connect($this->_host, $this->_port, 3);
+        return $isconnection;
     }
 
 

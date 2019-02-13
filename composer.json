@@ -27,7 +27,8 @@
                 "Swoorpc\\ServiceProvider"
             ],
             "aliases": {
-                "SwoorpcRouter": "Swoorpc\\Facades\\RouterFacade"
+                "SwoorpcRouter": "Swoorpc\\Facades\\RouterFacade",
+                "HClients": "Swoorpc\\HClients"
             }
         }
     }

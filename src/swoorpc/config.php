@@ -24,9 +24,8 @@ return [
 
     'client' => [
 
-
         'uris' => [
-            'client1' => 'tcp://10.10.0.0:9501',
+//            'serviceDemo' => 'tcp://10.10.0.0:9501',
         ]
     ],
 
