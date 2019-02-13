@@ -31,10 +31,10 @@ class Swoorpc
 
         switch ($scheme) {
             case 'tcp':
-                $client = new Client\TcpClient(SWOOLE_TCP, $host, $port);
+                $client = new Client\TcpClient(SWOOLE_TCP | SWOOLE_KEEP, $host, $port);
                 break;
             default:
-                $client = new Client\TcpClient(SWOOLE_TCP, $host, $port);
+                $client = new Client\TcpClient(SWOOLE_TCP | SWOOLE_KEEP, $host, $port);
                 break;
         }
 

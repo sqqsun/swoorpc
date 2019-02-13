@@ -22,7 +22,7 @@ return [
         ]
     ],
 
-    'clients' => [
+    'client' => [
 
 
         'uris' => [
