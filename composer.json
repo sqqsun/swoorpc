@@ -18,7 +18,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Swoorpc\\": "src/Swoorpc/"
+            "Swoorpc\\": "src/swoorpc/"
         }
     },
     "extra": {
