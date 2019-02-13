@@ -14,8 +14,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0",
-        "swoole": ">=v4.*"
+        "php": ">=7.0.0"
     },
     "autoload": {
         "psr-4": {
