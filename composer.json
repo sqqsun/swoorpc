@@ -21,18 +21,13 @@
             "Swoorpc\\": "src/swoorpc/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "Swoorpc\\": "src/swoorpc/"
-        }
-    },
     "extra": {
         "laravel": {
             "providers": [
                 "Swoorpc\\ServiceProvider"
             ],
             "aliases": {
-                "SwoorpcRouter": "Swoorpc\\Facades\\Router"
+                "SwoorpcRouter": "Swoorpc\\Facades\\RouterFacade"
             }
         }
     }
