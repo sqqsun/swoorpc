@@ -21,6 +21,11 @@
             "Swoorpc\\": "src/swoorpc/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Swoorpc\\": "src/swoorpc/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
