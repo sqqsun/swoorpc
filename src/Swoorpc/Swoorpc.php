@@ -23,7 +23,12 @@ class Swoorpc
     public static function createClient($uri)
     {
         $client = null;
-        list($scheme, $host, $port) = parse_url($uri);
+
+        $uri = parse_url($uri);
+        $scheme = $uri['scheme'];
+        $host = $uri['host'];
+        $port = $uri['port'];
+
         switch ($scheme) {
             case 'tcp':
                 $client = new Client\TcpClient(SWOOLE_TCP, $host, $port);
