@@ -1,6 +1,12 @@
 {
     "name": "sqqsun/swoorpc",
+    "type": "library",
     "description": "swoole rpc",
+    "keywords": [
+        "rpc",
+        "swoole"
+    ],
+    "license": "MIT",
     "authors": [
         {
             "name": "sunqiang",
@@ -8,11 +14,12 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0"
+        "php": ">=7.0.0",
+        "swoole": ">=v4.*"
     },
     "autoload": {
         "psr-4": {
-            "Swoorpc\\" : "src/Swoorpc/"
+            "Swoorpc\\": "src/Swoorpc/"
         }
     },
     "extra": {
@@ -23,7 +30,6 @@
             "aliases": {
                 "SwoorpcRouter": "Swoorpc\\Facades\\Router"
             }
-
         }
     }
 }
