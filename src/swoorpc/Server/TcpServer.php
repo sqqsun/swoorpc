@@ -37,7 +37,7 @@ class TcpServer
 
     public function onConnect($serv, $fd)
     {
-        echo "onConnect:$fd" . PHP_EOL;
+        //echo "onConnect:$fd" . PHP_EOL;
     }
 
     public function onReceive($serv, $fd, $reactor_id, $data)
@@ -47,7 +47,7 @@ class TcpServer
 
     public function onClose($serv, $fd)
     {
-        echo "onClose:$fd" . PHP_EOL;
+        //echo "onClose:$fd" . PHP_EOL;
     }
 
     public function addMethod($class, $method, $alias)
