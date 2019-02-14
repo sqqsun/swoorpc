@@ -14,14 +14,21 @@ use Swoorpc\Swoorpc;
 class TcpServer
 {
 
+    private static $options = [
+        'open_length_check' => true,
+        'package_length_type' => 'N',
+        'package_length_offset' => 0,     //第N个字节是包长度的值
+        'package_body_offset' => 4,       //第几个字节开始计算长度
+    ];
+
     private $calls = [];
     private $serv;
 
     public function __construct($config)
     {
-        $this->serv = new swoole_server($config['host'], $config['port']);
+        $this->serv = new swoole_server($config['host'], $config['port'],$config['mode'],$config['sock_type']);
         if ($config['options']) {
-            $this->serv->set($config['options']);
+            $this->serv->set(array_merge($config['options'], self::$options));
         }
         $this->serv->on('connect', [$this, 'onConnect']);
         $this->serv->on('receive', [$this, 'onReceive']);
@@ -35,16 +42,7 @@ class TcpServer
 
     public function onReceive($serv, $fd, $reactor_id, $data)
     {
-
-        try {
-            $input = Swoorpc::swoorpc_unserialize($data);
-            $result = call_user_func_array($this->calls[$input->getMothed()], $input->getParams());
-            $output = new RpcOutput(0, $result);
-            $serv->send($fd, Swoorpc::swoorpc_serialize($output));
-        } catch (\Exception $ex) {
-            $output = new RpcOutput($ex->getCode(), $ex->getMessage());
-            $serv->send($fd, Swoorpc::swoorpc_serialize($output));
-        }
+        $this->handle($serv, $fd, $data);
     }
 
     public function onClose($serv, $fd)
@@ -60,5 +58,26 @@ class TcpServer
     public function start()
     {
         $this->serv->start();
+    }
+
+    private function handle($serv, $fd, $data)
+    {
+        try {
+            $input = Swoorpc::swoorpc_unserialize(substr($data, self::$options['package_body_offset']));
+            $result = call_user_func_array($this->calls[$input->getMothed()], $input->getParams());
+            $output = new RpcOutput(0, $result);
+            $dataStr = Swoorpc::swoorpc_serialize($output);
+
+        } catch (\Exception $ex) {
+            $output = new RpcOutput($ex->getCode(), $ex->getMessage());
+            $dataStr = Swoorpc::swoorpc_serialize($output);
+        }
+        $dataLen = strlen($dataStr);
+        $responseData = pack(self::$options['package_length_type'], $dataLen) . $dataStr;
+
+        $serv->send($fd, $responseData);
+
+
+
     }
 }

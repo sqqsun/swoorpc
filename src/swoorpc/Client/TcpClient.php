@@ -16,17 +16,27 @@ use swoole_client;
 
 class TcpClient
 {
+
+    private static $options = [
+        'open_length_check' => true,
+        'package_length_type' => 'N',
+        'package_length_offset' => 0,     //第N个字节是包长度的值
+        'package_body_offset' => 4,       //第几个字节开始计算长度
+    ];
+
     private $_client;
     private $_sock_type;
     private $_host;
     private $_port;
+    private $_options;
 
     private $_methodCache = [];
 
 
-    public function __construct($sock_type, $host, $port)
+    public function __construct($config, $host, $port)
     {
-        $this->_sock_type = $sock_type;
+        $this->_sock_type = $config['sock_type'];
+        $this->_options = $config['options'];
         $this->_host = $host;
         $this->_port = $port;
         $this->_connect();
@@ -34,19 +44,15 @@ class TcpClient
 
     public function _send($mothed, $params, $recount = 5)
     {
-        $input = new RpcInput($mothed, $params);
-        $inputStr = Swoorpc::swoorpc_serialize($input);
 
-        $this->_client->send($inputStr);
-        $result = $this->_client->recv();
+        $result = $this->_handle($mothed, $params);
+
         if (!$result && $recount > 0) {
             sleep(1);
             $this->_connect();
             return $this->_send($mothed, $params, $recount - 1);
         }
-
-        $result = $this->_client->recv();
-        $rpcOutput = Swoorpc::swoorpc_unserialize($result);
+        $rpcOutput = Swoorpc::swoorpc_unserialize(substr($result, self::$options['package_body_offset']));
         if ($rpcOutput->getCode() != 0) {
             throw new RpcException($rpcOutput->getCode(), $rpcOutput->getMessage());
         }
@@ -54,12 +60,12 @@ class TcpClient
     }
 
 
-
     private function _connect()
     {
 
         unset($this->_client);
         $this->_client = new swoole_client($this->_sock_type);
+        $this->_client->set(array_merge($this->_options, self::$options));
         $isconnection = $this->_client->connect($this->_host, $this->_port, 3);
         return $isconnection;
     }
@@ -81,5 +87,18 @@ class TcpClient
     public function __call($name, $arguments)
     {
         return $this->_send($name, $arguments);
+    }
+
+
+    private function _handle($mothed, $params)
+    {
+        $input = new RpcInput($mothed, $params);
+        $inputStr = Swoorpc::swoorpc_serialize($input);
+        $requestStr = pack(self::$options['package_length_type'], strlen($inputStr)) . $inputStr;
+        $this->_client->send($requestStr);
+
+        $result = $this->_client->recv();
+        return $result;
+
     }
 }

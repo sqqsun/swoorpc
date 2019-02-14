@@ -35,9 +35,10 @@ class HClients
     {
         $client = isset(self::$clients[$name]) ? self::$clients[$name] : null;
         if (!$client) {
-            $config = config('swoorpc.client.uris');
-            $uri = $config[$name];
-            $client = Swoorpc::createClient($uri);
+            $config = config('swoorpc.client');
+            $uris = config('swoorpc.hclients');
+            $uri = $uris[$name];
+            $client = Swoorpc::createClient($config, $uri);
             self::$clients[$name] = $client;
         }
         return $client;

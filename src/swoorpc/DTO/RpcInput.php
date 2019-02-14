@@ -32,4 +32,5 @@ class RpcInput
         }
         return $this->params;
     }
+
 }

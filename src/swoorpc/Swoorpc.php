@@ -20,7 +20,7 @@ class Swoorpc
     }
 
 
-    public static function createClient($uri)
+    public static function createClient($config, $uri)
     {
         $client = null;
 
@@ -31,10 +31,10 @@ class Swoorpc
 
         switch ($scheme) {
             case 'tcp':
-                $client = new Client\TcpClient(SWOOLE_TCP | SWOOLE_KEEP, $host, $port);
+                $client = new Client\TcpClient($config, $host, $port);
                 break;
             default:
-                $client = new Client\TcpClient(SWOOLE_TCP | SWOOLE_KEEP, $host, $port);
+                $client = new Client\TcpClient($config, $host, $port);
                 break;
         }
 
@@ -44,7 +44,6 @@ class Swoorpc
 
     public static function swoorpc_serialize($obj)
     {
-        //压缩
         $str = serialize($obj);
         return $str;
     }
