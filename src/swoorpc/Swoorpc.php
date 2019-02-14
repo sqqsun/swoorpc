@@ -44,13 +44,13 @@ class Swoorpc
 
     public static function swoorpc_serialize($obj)
     {
-        $str = serialize($obj);
+        $str = gzcompress(serialize($obj));
         return $str;
     }
 
     public static function swoorpc_unserialize($str)
     {
-        $obj = unserialize($str);
+        $obj = unserialize(gzuncompress($str));
         return $obj;
     }
 }
