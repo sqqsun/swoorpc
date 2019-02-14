@@ -1,3 +1,5 @@
+# 未经过专业测试,仅为研究使用
+
 # swoorpc
 基于swoole的rpc框架
 # Server
