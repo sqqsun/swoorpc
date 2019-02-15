@@ -77,9 +77,21 @@ class TcpServer
                     $output = new RpcOutput(0, $taskId);
                     $dataStr = Swoorpc::swoorpc_serialize($output);
 
-                } else {
+                } else if (isset($options['timerAfter']) && count($options['timerAfter']) > 0) {
 
+                    $timerCount = 0;
+                    foreach ($options['timerAfter'] as $time) {
 
+                        $calls = $this->calls;
+                        $timerId = swoole_timer_after($time, function () use ($calls, $input) {
+                            call_user_func_array($calls[$input->getMothed()], $input->getParams());
+                        });
+                        if ($timerId > 0) {
+                            $timerCount++;
+                        }
+                    }
+                    $output = new RpcOutput(0, $timerCount);
+                    $dataStr = Swoorpc::swoorpc_serialize($output);
                 }
 
             } else {

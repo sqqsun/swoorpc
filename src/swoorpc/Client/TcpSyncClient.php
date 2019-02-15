@@ -44,13 +44,21 @@ class TcpSyncClient
 
     public function _send($mothed, $params, $options = null, $recount = 5)
     {
-        $result = $this->_handle($mothed, $params, $options);
+        try {
+            $result = $this->_handle($mothed, $params, $options);
+        } catch (\Exception $ex) {  //异常重试
+            sleep(1);
+            $this->_connect();
+            return $this->_send($mothed, $params, $options, $recount - 1);
+        }
 
         if (!$result && $recount > 0) { //重试
             sleep(1);
             $this->_connect();
             return $this->_send($mothed, $params, $options, $recount - 1);
         }
+
+
 
         $rpcOutput = Swoorpc::swoorpc_unserialize(substr($result, self::$options['package_body_offset']));
         if ($rpcOutput->getCode() != 0) {
@@ -96,9 +104,7 @@ class TcpSyncClient
         $inputStr = Swoorpc::swoorpc_serialize($input);
         $requestStr = pack(self::$options['package_length_type'], strlen($inputStr)) . $inputStr;
         $this->_client->send($requestStr);
-
         $result = $this->_client->recv();
         return $result;
-
     }
 }
