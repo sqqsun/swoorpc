@@ -13,6 +13,7 @@ class Proxy
 {
     private $client;
     private $prefix;
+    private $_methodCache = [];
 
     public function __construct($client, $prefix)
     {
@@ -23,5 +24,15 @@ class Proxy
     public function __call($name, $arguments)
     {
         return $this->client->_send($this->prefix . '_' . $name, $arguments);
+    }
+
+    public function __get($name)
+    {
+        if (isset($this->_methodCache[$name])) {
+            return $this->_methodCache[$name];
+        }
+        $method = new Proxy($this->client, $this->prefix . '_' . $name);
+        $this->_methodCache[$name] = $method;
+        return $method;
     }
 }

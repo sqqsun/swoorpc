@@ -13,11 +13,13 @@ class RpcInput
 {
     private $mothed;
     private $params;
+    private $options;
 
-    public function __construct($mothed, $params)
+    public function __construct($mothed, $params, $options = null)
     {
         $this->mothed = $mothed;
         $this->params = $params;
+        $this->options = $options;
     }
 
     public function getMothed()
@@ -31,6 +33,11 @@ class RpcInput
             $this->params = [];
         }
         return $this->params;
+    }
+
+    public function getOptions()
+    {
+        return $this->options;
     }
 
 }

@@ -31,6 +31,8 @@ class TcpAsyncClient
 
     private $_methodCache = [];
 
+    private $_isConnected = false;
+    private $_connecting = false;
 
     public function __construct($config, $host, $port)
     {
@@ -44,17 +46,18 @@ class TcpAsyncClient
     public function _send($mothed, $params, $recount = 5)
     {
 
-        $result = $this->_handle($mothed, $params);
-
-        if (!$result && $recount > 0) {
-            sleep(1);
-            $this->_connect();
-            return $this->_send($mothed, $params, $recount - 1);
+        if ($this->_isConnected) {
+            return $this->_handle($mothed, $params);
+        } else {
+//            if ( $recount > 0) {
+//                sleep(1);
+//                if (!$this->_connecting) {
+//                    $this->_connect();
+//                }
+//                return $this->_send($mothed, $params, $recount - 1);
+//            }
         }
-
-        return $result;
     }
-
 
     private function _connect()
     {
@@ -66,6 +69,7 @@ class TcpAsyncClient
         $this->_client->on('close', [$this, '_onClose']);
         $this->_client->on('error', [$this, '_onError']);
         $isconnection = $this->_client->connect($this->_host, $this->_port, 3);
+        $this->_connecting = true;
         return $isconnection;
     }
 
@@ -73,21 +77,25 @@ class TcpAsyncClient
     {
         //\Log::info($data);
 
+
     }
 
     public function _onConnect($cli)
     {
-
+        $this->_isConnected = true;
+        $this->_connecting = false;
     }
 
     public function _onClose($cli)
     {
-
+        $this->_isConnected = false;
+        $this->_connecting = false;
     }
 
     public function _onError($cli)
     {
-
+        $this->_isConnected = false;
+        $this->_connecting = false;
     }
 
     public function __get($name)

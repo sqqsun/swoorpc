@@ -42,16 +42,16 @@ class TcpSyncClient
         $this->_connect();
     }
 
-    public function _send($mothed, $params, $recount = 5)
+    public function _send($mothed, $params, $options = null, $recount = 5)
     {
+        $result = $this->_handle($mothed, $params, $options);
 
-        $result = $this->_handle($mothed, $params);
-
-        if (!$result && $recount > 0) {
+        if (!$result && $recount > 0) { //重试
             sleep(1);
             $this->_connect();
-            return $this->_send($mothed, $params, $recount - 1);
+            return $this->_send($mothed, $params, $options, $recount - 1);
         }
+
         $rpcOutput = Swoorpc::swoorpc_unserialize(substr($result, self::$options['package_body_offset']));
         if ($rpcOutput->getCode() != 0) {
             throw new RpcException($rpcOutput->getCode(), $rpcOutput->getMessage());
@@ -90,9 +90,9 @@ class TcpSyncClient
     }
 
 
-    private function _handle($mothed, $params)
+    private function _handle($mothed, $params, $options = null)
     {
-        $input = new RpcInput($mothed, $params);
+        $input = new RpcInput($mothed, $params, $options);
         $inputStr = Swoorpc::swoorpc_serialize($input);
         $requestStr = pack(self::$options['package_length_type'], strlen($inputStr)) . $inputStr;
         $this->_client->send($requestStr);
