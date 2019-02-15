@@ -58,7 +58,6 @@ class TcpAsyncClient
 
     private function _connect()
     {
-
         unset($this->_client);
         $this->_client = new swoole_client($this->_sock_type | SWOOLE_SOCK_ASYNC);
         $this->_client->set(array_merge($this->_options, self::$options));
@@ -91,16 +90,12 @@ class TcpAsyncClient
     {
         return $this->_send($name, $arguments);
     }
-
-
+    
     private function _handle($mothed, $params)
     {
         $input = new RpcInput($mothed, $params);
         $inputStr = Swoorpc::swoorpc_serialize($input);
         $requestStr = pack(self::$options['package_length_type'], strlen($inputStr)) . $inputStr;
         return $this->_client->send($requestStr);
-
-
     }
-
 }
