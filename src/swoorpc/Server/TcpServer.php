@@ -71,12 +71,18 @@ class TcpServer
             if ($options && count($options) > 0) {
                 if (isset($options['task']) && $options['task']) {
                     $taskId = $serv->task(['mothed' => $input->getMothed(), 'params' => $input->getParams()]);
+                    if ($taskId !== false) {
+                        $taskId = true;
+                    }
                     $output = new RpcOutput(0, $taskId);
                     $dataStr = Swoorpc::swoorpc_serialize($output);
+
+                } else {
+
+
                 }
 
             } else {
-                //同步阻塞
                 $result = call_user_func_array($this->calls[$input->getMothed()], $input->getParams());
                 $output = new RpcOutput(0, $result);
                 $dataStr = Swoorpc::swoorpc_serialize($output);
@@ -93,7 +99,6 @@ class TcpServer
         $serv->send($fd, $responseData);
     }
 
-
     public function onTask(swoole_server $serv, $task_id, $from_id, $data)
     {
         return call_user_func_array($this->calls[$data['mothed']], $data['params']);
@@ -101,6 +106,6 @@ class TcpServer
 
     public function onFinish(swoole_server $serv, int $task_id, string $data)
     {
-        
+
     }
 }

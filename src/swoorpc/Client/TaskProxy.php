@@ -25,10 +25,7 @@ class TaskProxy
     {
         if ($name == 'task') {
             $options = ['task' => true];
-            $this->client->_send($this->name, $arguments, $options);
+            return $this->client->_send($this->name, $arguments, $options);
         }
-
-        // TODO: Implement __call() method.
     }
-
 }

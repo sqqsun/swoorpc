@@ -9,6 +9,9 @@
 namespace Swoorpc;
 
 
+
+use Swoorpc\Exception\RpcException;
+
 class Swoorpc
 {
 
@@ -32,7 +35,7 @@ class Swoorpc
         switch ($scheme) {
             case 'tcp':
                 if ($is_sync) {
-                    $client = new Client\TcpAsyncClient($config, $host, $port);
+                    throw new RpcException('未完成');
                 } else {
                     $client = new Client\TcpSyncClient($config, $host, $port);
                 }
