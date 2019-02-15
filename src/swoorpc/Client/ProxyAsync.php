@@ -28,7 +28,7 @@ class ProxyAsync
                 $options = ['task' => true];
                 break;
             case 'timerAfter':
-                $times = array_slice($arguments, -1);
+                list($times) = array_slice($arguments, -1);
                 if (!is_array($times)) {
                     $times = [$times];
                 }
