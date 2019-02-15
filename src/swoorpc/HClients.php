@@ -37,12 +37,11 @@ class HClients
         if (!$client) {
             $config = config('swoorpc.client');
             $uris = config('swoorpc.hclients');
-            $uri = $uris[$name];
-
             if (substr($name, 0, 1) == '_') {
-
+                $uri = $uris[substr($name, 1)];
                 $client = Swoorpc::createClient($config, $uri, true);
             } else {
+                $uri = $uris[$name];
                 $client = Swoorpc::createClient($config, $uri, false);
             }
 

@@ -34,7 +34,7 @@ class TcpAsyncClient
 
     public function __construct($config, $host, $port)
     {
-        $this->_sock_type = $config['sock_type'];
+        $this->_sock_type = SWOOLE_TCP;
         $this->_options = $config['options'];
         $this->_host = $host;
         $this->_port = $port;
@@ -59,9 +59,12 @@ class TcpAsyncClient
     private function _connect()
     {
         unset($this->_client);
-        $this->_client = new swoole_client($this->_sock_type | SWOOLE_SOCK_ASYNC);
+        $this->_client = new swoole_client($this->_sock_type, SWOOLE_SOCK_ASYNC);
         $this->_client->set(array_merge($this->_options, self::$options));
+        $this->_client->on('connect', [$this, '_onConnect']);
         $this->_client->on('receive', [$this, '_onReceive']);
+        $this->_client->on('close', [$this, '_onClose']);
+        $this->_client->on('error', [$this, '_onError']);
         $isconnection = $this->_client->connect($this->_host, $this->_port, 3);
         return $isconnection;
     }
@@ -72,6 +75,20 @@ class TcpAsyncClient
 
     }
 
+    public function _onConnect($cli)
+    {
+
+    }
+
+    public function _onClose($cli)
+    {
+
+    }
+
+    public function _onError($cli)
+    {
+
+    }
 
     public function __get($name)
     {
@@ -90,7 +107,7 @@ class TcpAsyncClient
     {
         return $this->_send($name, $arguments);
     }
-    
+
     private function _handle($mothed, $params)
     {
         $input = new RpcInput($mothed, $params);
