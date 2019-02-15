@@ -53,7 +53,7 @@ class SwoorpcCmd extends Command
      */
     protected function outputInfo()
     {
-        $this->comment('-----------------------------------------------------');
+        $this->comment("---------------" . date('Y-m-d H:i:s') . "-------------------");
         $this->comment('版本:');
         $this->output->writeln(sprintf('Laravel:<info>%s</>', app()::VERSION), $this->parseVerbosity(null));
         $this->output->writeln(sprintf('Swoole:<info>%s</>', SWOOLE_VERSION), $this->parseVerbosity(null));

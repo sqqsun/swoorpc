@@ -20,7 +20,7 @@ class Swoorpc
     }
 
 
-    public static function createClient($config, $uri)
+    public static function createClient($config, $uri, $is_sync = false)
     {
         $client = null;
 
@@ -31,10 +31,15 @@ class Swoorpc
 
         switch ($scheme) {
             case 'tcp':
-                $client = new Client\TcpClient($config, $host, $port);
+                if ($is_sync) {
+                    $client = new Client\TcpAsyncClient($config, $host, $port);
+                } else {
+                    $client = new Client\TcpSyncClient($config, $host, $port);
+                }
+
                 break;
             default:
-                $client = new Client\TcpClient($config, $host, $port);
+                //$client = new Client\TcpSyncClient($config, $host, $port);
                 break;
         }
 

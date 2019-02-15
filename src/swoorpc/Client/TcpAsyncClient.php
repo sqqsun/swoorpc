@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: sunqiang
- * Date: 2019/2/11
- * Time: 4:39 PM
+ * Date: 2019/2/15
+ * Time: 10:31 AM
  */
 
 namespace Swoorpc\Client;
@@ -14,9 +14,8 @@ use Swoorpc\Exception\RpcException;
 use Swoorpc\Swoorpc;
 use swoole_client;
 
-class TcpClient
+class TcpAsyncClient
 {
-
     private static $options = [
         'open_length_check' => true,
         'package_length_type' => 'N',
@@ -52,11 +51,8 @@ class TcpClient
             $this->_connect();
             return $this->_send($mothed, $params, $recount - 1);
         }
-        $rpcOutput = Swoorpc::swoorpc_unserialize(substr($result, self::$options['package_body_offset']));
-        if ($rpcOutput->getCode() != 0) {
-            throw new RpcException($rpcOutput->getCode(), $rpcOutput->getMessage());
-        }
-        return $rpcOutput->getMessage();
+
+        return $result;
     }
 
 
@@ -64,10 +60,17 @@ class TcpClient
     {
 
         unset($this->_client);
-        $this->_client = new swoole_client($this->_sock_type);
+        $this->_client = new swoole_client($this->_sock_type | SWOOLE_SOCK_ASYNC);
         $this->_client->set(array_merge($this->_options, self::$options));
+        $this->_client->on('receive', [$this, '_onReceive']);
         $isconnection = $this->_client->connect($this->_host, $this->_port, 3);
         return $isconnection;
+    }
+
+    public function _onReceive($cli, $data)
+    {
+        //\Log::info($data);
+
     }
 
 
@@ -95,10 +98,9 @@ class TcpClient
         $input = new RpcInput($mothed, $params);
         $inputStr = Swoorpc::swoorpc_serialize($input);
         $requestStr = pack(self::$options['package_length_type'], strlen($inputStr)) . $inputStr;
-        $this->_client->send($requestStr);
+        return $this->_client->send($requestStr);
 
-        $result = $this->_client->recv();
-        return $result;
 
     }
+
 }
