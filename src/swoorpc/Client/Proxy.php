@@ -23,7 +23,25 @@ class Proxy
 
     public function __call($name, $arguments)
     {
-        return $this->client->_send($this->prefix . '_' . $name, $arguments);
+        switch ($name) {
+            case 'task':
+                $options = ['task' => true];
+                break;
+            case 'timerAfter':
+                list($times) = array_slice($arguments, -1);
+                if (!is_array($times)) {
+                    $times = [$times];
+                }
+                $arguments = array_slice($arguments, 0, count($arguments) - 1);
+                $options['timerAfter'] = $times;
+                break;
+
+            default:
+                $options = [];
+                break;
+        }
+        return $this->client->_send($this->prefix . '_' . $name, $arguments, $options);
+
     }
 
     public function __get($name)
