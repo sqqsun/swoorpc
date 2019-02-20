@@ -47,17 +47,20 @@ class TcpSyncClient
         try {
             $result = $this->_handle($mothed, $params, $options);
         } catch (\Exception $ex) {  //异常重试
-            sleep(1);
+            if ($recount <= 3) {
+                sleep(1);
+            }
             $this->_connect();
             return $this->_send($mothed, $params, $options, $recount - 1);
         }
 
         if (!$result && $recount > 0) { //重试
-            sleep(1);
+            if ($recount <= 3) {
+                sleep(1);
+            }
             $this->_connect();
             return $this->_send($mothed, $params, $options, $recount - 1);
         }
-
 
 
         $rpcOutput = Swoorpc::swoorpc_unserialize(substr($result, self::$options['package_body_offset']));

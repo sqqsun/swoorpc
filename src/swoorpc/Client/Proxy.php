@@ -23,6 +23,9 @@ class Proxy
 
     public function __call($name, $arguments)
     {
+
+        $fun = $this->prefix;
+
         switch ($name) {
             case 'task':
                 $options = ['task' => true];
@@ -37,10 +40,12 @@ class Proxy
                 break;
 
             default:
+                $fun = $fun . '_' . $name;
                 $options = [];
                 break;
         }
-        return $this->client->_send($this->prefix . '_' . $name, $arguments, $options);
+        return $this->client->_send($fun, $arguments, $options);
+
 
     }
 
@@ -49,7 +54,7 @@ class Proxy
         if (isset($this->_methodCache[$name])) {
             return $this->_methodCache[$name];
         }
-        $method = new ProxyAsync($this->client, $this->prefix . '_' . $name);
+        $method = new Proxy($this->client, $this->prefix . '_' . $name);
         $this->_methodCache[$name] = $method;
         return $method;
     }
