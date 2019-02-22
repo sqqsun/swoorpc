@@ -56,8 +56,7 @@ class Router
             $name = ltrim(rtrim(trim($action['prefix'], '_') . '_' . trim($name, '_'), '_'), '_');
         }
         list($class, $method) = $this->parseController($action['namespace'], $action['controller']);
-        $this->addMethod($method, $class, $name, $options);
-        $this->appendMethod($name);
+        $this->appendMethod($name,$method, $class, $name, $options);
         return $this;
     }
 
@@ -74,8 +73,9 @@ class Router
     /**
      * @param $name 添加方法
      */
-    public function appendMethod($name){
-        $this->methods[] = $name;
+    public function appendMethod(string $name, string $method, $class, string $alias, array $options)
+    {
+        $this->methods[$name] = [$method, $class, $alias, $options];
     }
 
     /**
@@ -158,19 +158,4 @@ class Router
         return array_get($old, 'prefix', '');
     }
 
-
-    /**
-     * 添加类方法
-     *
-     * @param string $method
-     * @param object $class
-     * @param string $alias
-     * @param array $alias
-     *
-     * @return void
-     */
-    private function addMethod(string $method, $class, string $alias, array $options)
-    {
-        app('swoorpc.server')->addMethod($class, $method, $alias);
-    }
 }

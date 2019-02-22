@@ -42,6 +42,10 @@ class SwoorpcCmd extends Command
     {
         $this->outputInfo();
         $server = app('swoorpc.server');
+        $methods = \SwoorpcRouter::getMethods();
+        foreach ($methods as list($method, $class, $alias, $options)) {
+            $server->addMethod($class, $method, $alias);
+        }
         $server->start();
     }
 
@@ -67,8 +71,8 @@ class SwoorpcCmd extends Command
         $this->comment('远程方法:');
         $methods = \SwoorpcRouter::getMethods();
         if ($methods) {
-            foreach ($methods as $method) {
-                $this->line(sprintf(' -> <info>%s</>', $method));
+            foreach ($methods as $name => $method) {
+                $this->line(sprintf(' -> <info>%s</>', $name));
             }
             $this->output->newLine();
         } else {
