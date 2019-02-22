@@ -101,7 +101,7 @@ class ServiceProvider extends LaravelServiceProvider
      */
     private function registerSwoorpcServer()
     {
-        $this->app->singleton('_swoorpc.server', function ($app) {
+        $this->app->singleton('swoorpc.server', function ($app) {
             $config = config('swoorpc.server');
             $server = Swoorpc::createServer($config);
             return $server;

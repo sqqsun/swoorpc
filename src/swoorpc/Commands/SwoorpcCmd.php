@@ -41,7 +41,7 @@ class SwoorpcCmd extends Command
     public function handle()
     {
         $this->outputInfo();
-        $server = app('_swoorpc.server');
+        $server = app('swoorpc.server');
         $server->start();
     }
 

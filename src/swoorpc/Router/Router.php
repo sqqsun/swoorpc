@@ -171,6 +171,6 @@ class Router
      */
     private function addMethod(string $method, $class, string $alias, array $options)
     {
-        app('_swoorpc.server')->addMethod($class, $method, $alias);
+        app('swoorpc.server')->addMethod($class, $method, $alias);
     }
 }
