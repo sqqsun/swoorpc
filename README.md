@@ -1,5 +1,5 @@
 # swoorpc
-基于swoole的rpc框架
+适用于Laravel 5.7 框架的的swoole rpc组件
 # Server
 
 ## 生成配置文件
