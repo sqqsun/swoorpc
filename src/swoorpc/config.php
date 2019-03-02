@@ -21,6 +21,7 @@ return [
             'socket_buffer_size' => 1024 * 1024 * 2,
             'task_worker_num' => 100, //task进程的数量
             'task_max_request' => 100, //task进程的最大任务数
+            'open_tcp_nodelay' => true,
         ]
     ],
 
