@@ -84,7 +84,12 @@ class TcpServer
 
                         $calls = $this->calls;
                         $timerId = swoole_timer_after($time, function () use ($calls, $input) {
-                            call_user_func_array($calls[$input->getMothed()], $input->getParams());
+
+                            try {
+                                call_user_func_array($calls[$input->getMothed()], $input->getParams());
+                            } catch (\Exception $ex) {
+                                \Log::error($ex);
+                            }
                         });
                         if ($timerId > 0) {
                             $timerCount++;
@@ -113,7 +118,12 @@ class TcpServer
 
     public function onTask(swoole_server $serv, $task_id, $from_id, $data)
     {
-        return call_user_func_array($this->calls[$data['mothed']], $data['params']);
+        try {
+            call_user_func_array($this->calls[$data['mothed']], $data['params']);
+        } catch (\Exception $ex) {
+            \Log::error($ex);
+        }
+        return '';
     }
 
     public function onFinish(swoole_server $serv, int $task_id, string $data)
