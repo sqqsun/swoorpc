@@ -49,7 +49,7 @@ class TcpSyncClient
         } catch (\Exception $ex) {  //异常重试
             if ($recount > 0) {
                 sleep(1);
-                $this->_connect();
+                $this->_connect(true);
                 return $this->_send($mothed, $params, $options, $recount - 1);
             }
         }
@@ -58,7 +58,7 @@ class TcpSyncClient
             if ($recount <= 3) {
                 sleep(1);
             }
-            $this->_connect();
+            $this->_connect(true);
             return $this->_send($mothed, $params, $options, $recount - 1);
         }
 
@@ -71,10 +71,16 @@ class TcpSyncClient
     }
 
 
-    private function _connect()
+    private function _connect($reconnect = false)
     {
 
-        unset($this->_client);
+        if ($reconnect) {
+            if (isset($this->_client) && null != $this->_client) {
+                $this->_client->close(true);
+                unset($this->_client);
+                $this->_client = null;
+            }
+        }
         $this->_client = new swoole_client($this->_sock_type);
         $this->_client->set(array_merge($this->_options, self::$options));
         $isconnection = $this->_client->connect($this->_host, $this->_port, 3);
