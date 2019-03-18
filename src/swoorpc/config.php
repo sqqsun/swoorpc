@@ -14,12 +14,12 @@ return [
         'sock_type' => SWOOLE_SOCK_TCP,//指定Socket的类型
 
         'options' => [ //参见Swoole官方文档
-            'worker_num' => 4,    //worker process num
-            'max_request' => 256, //设置worker进程的最大任务数
+            'worker_num' => env('SWOOLE_WORKER_NUM',swoole_cpu_num()) ,    //worker process num
+            'max_request' => 3000, //设置worker进程的最大任务数
             'buffer_output_size' => 1024 * 1024 * 2, //发送输出缓存区内存尺寸
             'package_max_length' => 1024 * 1024 * 2,  //协议最大长度
             'socket_buffer_size' => 1024 * 1024 * 2,
-            'task_worker_num' => 100, //task进程的数量
+            'task_worker_num' => env('SWOOLE_TASK_WORKER_NUM',swoole_cpu_num()) , //task进程的数量
             'task_max_request' => 100, //task进程的最大任务数
             'open_tcp_nodelay' => true,
         ]
