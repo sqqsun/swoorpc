@@ -107,6 +107,7 @@ class TcpServer
 
 
         } catch (\Exception $ex) {
+            \Log::error($ex);
             $output = new RpcOutput($ex->getCode(), $ex->getMessage());
             $dataStr = Swoorpc::swoorpc_serialize($output);
         }
