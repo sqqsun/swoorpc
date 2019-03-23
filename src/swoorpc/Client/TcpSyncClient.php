@@ -48,16 +48,12 @@ class TcpSyncClient
             $result = $this->_handle($mothed, $params, $options);
         } catch (\Exception $ex) {  //异常重试
             if ($recount > 0) {
-                sleep(1);
                 $this->_connect(true);
                 return $this->_send($mothed, $params, $options, $recount - 1);
             }
         }
 
         if (!$result && $recount > 0) { //重试
-            if ($recount <= 3) {
-                sleep(1);
-            }
             $this->_connect(true);
             return $this->_send($mothed, $params, $options, $recount - 1);
         }
