@@ -42,7 +42,7 @@ class TcpSyncClient
         $this->_connect();
     }
 
-    public function _send($mothed, $params, $options = null, $recount = 5)
+    public function _send($mothed, $params, $options = null, $recount = 3)
     {
         try {
             $result = $this->_handle($mothed, $params, $options);
@@ -77,10 +77,20 @@ class TcpSyncClient
                 $this->_client = null;
             }
         }
+
         $this->_client = new swoole_client($this->_sock_type);
         $this->_client->set(array_merge($this->_options, self::$options));
-        $isconnection = $this->_client->connect($this->_host, $this->_port, 3);
-        return $isconnection;
+
+        for ($i = 0; $i < 2; $i++) {
+            $ret = $this->_client->connect($this->_host, $this->_port, 3);
+            if ($ret === false and ($this->_client->errCode == 114 or $this->_client->errCode == 115)) {
+                //强制关闭，重连
+                $this->_client->close(true);
+                continue;
+            } else {
+                break;
+            }
+        }
     }
 
 
@@ -108,7 +118,9 @@ class TcpSyncClient
         $input = new RpcInput($mothed, $params, $options);
         $inputStr = Swoorpc::swoorpc_serialize($input);
         $requestStr = pack(self::$options['package_length_type'], strlen($inputStr)) . $inputStr;
-        $this->_client->send($requestStr);
+        if ($this->_client->send($requestStr) === false) {
+            return false;
+        }
         $result = $this->_client->recv();
         return $result;
     }
