@@ -114,7 +114,9 @@ class TcpServer
         $dataLen = strlen($dataStr);
         $responseData = pack(self::$options['package_length_type'], $dataLen) . $dataStr;
 
-        $serv->send($fd, $responseData);
+        if ($serv->send($fd, $responseData) === false) {
+            $serv->close($fd);
+        }
     }
 
     public function onTask(swoole_server $serv, $task_id, $from_id, $data)
