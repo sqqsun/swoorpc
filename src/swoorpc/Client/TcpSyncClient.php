@@ -42,7 +42,7 @@ class TcpSyncClient
         $this->_connect();
     }
 
-    public function _send($mothed, $params, $options = null, $recount = 3)
+    public function _send($mothed, $params, $options = null, $recount = 10)
     {
         $result = null;
         try {
@@ -63,6 +63,7 @@ class TcpSyncClient
         if (null == $result || false === $result || $result == '') {
             $errMessage = 'RPC 请求异常:' . $mothed . json_encode($params);
             \Log::error($errMessage);
+            \Log::error([$result]);
             throw new RpcException($errMessage);
         }
 
@@ -81,15 +82,15 @@ class TcpSyncClient
         if ($reconnect) {
             if (isset($this->_client) && null != $this->_client) {
                 $this->_client->close(true);
-                unset($this->_client);
-                $this->_client = null;
+//                unset($this->_client);
+//                $this->_client = null;
             }
         }
 
         $this->_client = new swoole_client($this->_sock_type);
         $this->_client->set(array_merge($this->_options, self::$options));
 
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $ret = $this->_client->connect($this->_host, $this->_port, 3);
             if ($ret === false and ($this->_client->errCode == 114 or $this->_client->errCode == 115)) {
                 //强制关闭，重连
