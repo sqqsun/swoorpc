@@ -44,6 +44,7 @@ class TcpSyncClient
 
     public function _send($mothed, $params, $options = null, $recount = 3)
     {
+        $result = null;
         try {
             $result = $this->_handle($mothed, $params, $options);
         } catch (\Exception $ex) {  //异常重试
@@ -53,9 +54,16 @@ class TcpSyncClient
             }
         }
 
-        if (!$result && $recount > 0) { //重试
+        if ((null == $result || false === $result || $result == '') && $recount > 0) { //重试
             $this->_connect(true);
             return $this->_send($mothed, $params, $options, $recount - 1);
+        }
+
+
+        if (null == $result || false === $result || $result == '') {
+            $errMessage = 'RPC 请求异常:' . $mothed . json_encode($params);
+            \Log::error($errMessage);
+            throw new RpcException($errMessage);
         }
 
 
