@@ -81,7 +81,11 @@ class TcpSyncClient
 
         if ($reconnect) {
             if (isset($this->_client) && null != $this->_client) {
-                $this->_client->close(true);
+                try {
+                    $this->_client->close(true);
+                } catch (\Exception $ex) {
+                    \Log::error($ex);
+                }
 //                unset($this->_client);
 //                $this->_client = null;
             }
@@ -94,7 +98,11 @@ class TcpSyncClient
             $ret = $this->_client->connect($this->_host, $this->_port, 3);
             if ($ret === false and ($this->_client->errCode == 114 or $this->_client->errCode == 115)) {
                 //强制关闭，重连
-                $this->_client->close(true);
+                try {
+                    $this->_client->close(true);
+                } catch (\Exception $ex) {
+                    \Log::error($ex);
+                }
                 continue;
             } else {
                 break;
