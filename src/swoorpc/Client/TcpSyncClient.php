@@ -95,7 +95,7 @@ class TcpSyncClient
         $this->_client->set(array_merge($this->_options, self::$options));
 
         for ($i = 0; $i < 10; $i++) {
-            $ret = $this->_client->connect($this->_host, $this->_port, -1);
+            $ret = $this->_client->connect($this->_host, $this->_port, 30);
             if ($ret === false and ($this->_client->errCode == 114 or $this->_client->errCode == 115)) {
                 //强制关闭，重连
                 try {
