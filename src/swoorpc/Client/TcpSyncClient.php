@@ -42,7 +42,7 @@ class TcpSyncClient
         $this->_connect();
     }
 
-    public function _send($mothed, $params, $options = null, $recount = 5)
+    public function _send($mothed, $params, $options = null, $recount = 2)
     {
         $result = null;
         try {
